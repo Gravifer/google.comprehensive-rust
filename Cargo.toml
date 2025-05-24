@@ -1,6 +1,6 @@
 [workspace]
 # Please keep the workspace members sorted.
-members = [
+members = [ "exercise",
   "mdbook-course",
   "mdbook-exerciser",
   "src/android/testing",
