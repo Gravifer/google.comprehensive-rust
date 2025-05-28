@@ -31,3 +31,6 @@ members = [ "exercise", "exercise/gui-modules",
   "xtask",
 ]
 resolver = "2"
+
+[profile.dev]
+incremental = false

@@ -3,13 +3,15 @@ pub trait Widget {
     fn width(&self) -> usize;
 
     /// Draw the widget into a buffer.
-    fn draw_into(&self, buffer: &mut dyn std::fmt::Write);
+    fn draw_into(&self, buffer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error> ;
 
     /// Draw the widget on standard output.
-    fn draw(&self) {
+    fn draw(&self)  -> Result<(), std::fmt::Error> {
         let mut buffer = String::new();
-        self.draw_into(&mut buffer);
+        self.draw_into(&mut buffer) ?;
         println!("{buffer}");
+
+        Ok(())
     }
 }
 
@@ -61,23 +63,32 @@ impl Widget for Window {
         self.inner_width() + 4
     }
 
-    fn draw_into(&self, buffer: &mut dyn std::fmt::Write) {
+    fn draw_into(&self, buffer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error> {
         let mut inner = String::new();
         for widget in &self.widgets {
-            widget.draw_into(&mut inner);
+            widget.draw_into(&mut inner) ?;
         }
 
         let inner_width = self.inner_width();
 
-        // TODO: Change draw_into to return Result<(), std::fmt::Error>. Then use the
-        // ?-operator here instead of .unwrap().
-        writeln!(buffer, "+-{:-<inner_width$}-+", "").unwrap();
-        writeln!(buffer, "| {:^inner_width$} |", &self.title).unwrap();
-        writeln!(buffer, "+={:=<inner_width$}=+", "").unwrap();
+        // // // TODO: Change draw_into to return Result<(), std::fmt::Error>. Then use the
+        // // // ?-operator here instead of .unwrap().
+        // // writeln!(buffer, "+-{:-<inner_width$}-+", "").unwrap();
+        // // writeln!(buffer, "| {:^inner_width$} |", &self.title).unwrap();
+        // // writeln!(buffer, "+={:=<inner_width$}=+", "").unwrap();
+        // // for line in inner.lines() {
+        // //     writeln!(buffer, "| {:inner_width$} |", line).unwrap();
+        // // }
+        // // writeln!(buffer, "+-{:-<inner_width$}-+", "").unwrap();
+        writeln!(buffer, "+-{:-<inner_width$}-+", "") ?;
+        writeln!(buffer, "| {:^inner_width$} |", &self.title) ?;
+        writeln!(buffer, "+={:=<inner_width$}=+", "") ?;
         for line in inner.lines() {
-            writeln!(buffer, "| {:inner_width$} |", line).unwrap();
+            writeln!(buffer, "| {:inner_width$} |", line) ?;
         }
-        writeln!(buffer, "+-{:-<inner_width$}-+", "").unwrap();
+        writeln!(buffer, "+-{:-<inner_width$}-+", "") ?;
+
+        Ok(())
     }
 }
 
@@ -86,16 +97,18 @@ impl Widget for Button {
         self.label.width() + 8 // add a bit of padding
     }
 
-    fn draw_into(&self, buffer: &mut dyn std::fmt::Write) {
+    fn draw_into(&self, buffer: &mut dyn std::fmt::Write)  -> Result<(), std::fmt::Error> {
         let width = self.width();
         let mut label = String::new();
-        self.label.draw_into(&mut label);
+        self.label.draw_into(&mut label) ?;
 
-        writeln!(buffer, "+{:-<width$}+", "").unwrap();
+        writeln!(buffer, "+{:-<width$}+", "") ?;
         for line in label.lines() {
-            writeln!(buffer, "|{:^width$}|", &line).unwrap();
+            writeln!(buffer, "|{:^width$}|", &line)?;
         }
-        writeln!(buffer, "+{:-<width$}+", "").unwrap();
+        writeln!(buffer, "+{:-<width$}+", "") ?;
+
+        Ok(())
     }
 }
 
@@ -104,14 +117,18 @@ impl Widget for Label {
         self.label.lines().map(|line| line.chars().count()).max().unwrap_or(0)
     }
 
-    fn draw_into(&self, buffer: &mut dyn std::fmt::Write) {
-        writeln!(buffer, "{}", &self.label).unwrap();
+    fn draw_into(&self, buffer: &mut dyn std::fmt::Write)  -> Result<(), std::fmt::Error> {
+        writeln!(buffer, "{}", &self.label) ?;
+
+        Ok(())
     }
 }
 
-fn main() {
+fn main()  -> Result<(), Box<dyn std::error::Error>> {
     let mut window = Window::new("Rust GUI Demo 1.23");
     window.add_widget(Box::new(Label::new("This is a small text GUI demo.")));
     window.add_widget(Box::new(Button::new("Click me!")));
-    window.draw();
+    window.draw() ?;
+
+    Ok(())
 }
