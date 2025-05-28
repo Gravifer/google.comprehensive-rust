@@ -16,16 +16,19 @@ impl Widget for Button {
         self.label.width() + 8 // add a bit of padding
     }
 
-    fn draw_into(&self, buffer: &mut dyn std::fmt::Write)  -> Result<(), std::fmt::Error> {
+    fn draw_into(
+        &self,
+        buffer: &mut dyn std::fmt::Write,
+    ) -> Result<(), std::fmt::Error> {
         let width = self.width();
         let mut label = String::new();
-        self.label.draw_into(&mut label) ?;
+        self.label.draw_into(&mut label)?;
 
-        writeln!(buffer, "+{:-<width$}+", "") ?;
+        writeln!(buffer, "+{:-<width$}+", "")?;
         for line in label.lines() {
             writeln!(buffer, "|{:^width$}|", &line)?;
         }
-        writeln!(buffer, "+{:-<width$}+", "") ?;
+        writeln!(buffer, "+{:-<width$}+", "")?;
 
         Ok(())
     }

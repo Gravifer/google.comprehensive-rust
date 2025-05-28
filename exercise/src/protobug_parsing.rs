@@ -97,31 +97,27 @@ fn unpack_tag(tag: u64) -> (u64, WireType) {
     (field_num, wire_type)
 }
 
-
 /// Parse a field, returning the remaining bytes
 fn parse_field(data: &[u8]) -> (Field, &[u8]) {
     let (tag, remainder) = parse_varint(data); // (u64, &[u8])
     let (field_num, wire_type) = unpack_tag(tag); // (u64, WireType)
-    let (fieldvalue, remainder) = match wire_type { 
+    let (fieldvalue, remainder) = match wire_type {
         // _ => todo!("Based on the wire type, build a Field, consuming as many bytes as necessary.")
         WireType::Len => {
             let (len, remainder) = parse_varint(remainder);
             let len: usize = len.try_into().unwrap();
-            let (value, remainder) = (&remainder[..len], &remainder[len..]); 
+            let (value, remainder) = (&remainder[..len], &remainder[len..]);
             (FieldValue::Len(value), remainder)
-        },
+        }
         WireType::Varint => {
             let (val, remainder) = parse_varint(remainder);
             (FieldValue::Varint(val), remainder)
-        },
+        }
         _ => todo!("default branch not yet implemented"),
     }; // (FieldValue, &[u8])
-    // todo!("Return the field, and any un-consumed bytes.")
-    let f = Field {
-        field_num,
-        value: fieldvalue,
-    };
-    (f, remainder)// (Field, &[u8])
+    // // todo!("Return the field, and any un-consumed bytes.")
+    let f = Field { field_num, value: fieldvalue };
+    (f, remainder) // (Field, &[u8])
 }
 
 /// Parse a message in the given data, calling `T::add_field` for each field in
@@ -172,7 +168,6 @@ impl<'a> ProtoMessage<'a> for PhoneNumber<'a> {
         }
     }
 }
-
 
 #[test]
 fn test_id() {

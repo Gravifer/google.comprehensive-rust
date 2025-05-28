@@ -16,8 +16,11 @@ impl Widget for Label {
         self.label.lines().map(|line| line.chars().count()).max().unwrap_or(0)
     }
 
-    fn draw_into(&self, buffer: &mut dyn std::fmt::Write)  -> Result<(), std::fmt::Error> {
-        writeln!(buffer, "{}", &self.label) ?;
+    fn draw_into(
+        &self,
+        buffer: &mut dyn std::fmt::Write,
+    ) -> Result<(), std::fmt::Error> {
+        writeln!(buffer, "{}", &self.label)?;
 
         Ok(())
     }

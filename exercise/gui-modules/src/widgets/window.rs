@@ -29,21 +29,24 @@ impl Widget for Window {
         self.inner_width() + 4
     }
 
-    fn draw_into(&self, buffer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error> {
+    fn draw_into(
+        &self,
+        buffer: &mut dyn std::fmt::Write,
+    ) -> Result<(), std::fmt::Error> {
         let mut inner = String::new();
         for widget in &self.widgets {
-            widget.draw_into(&mut inner) ?;
+            widget.draw_into(&mut inner)?;
         }
 
         let inner_width = self.inner_width();
 
-        writeln!(buffer, "+-{:-<inner_width$}-+", "") ?;
-        writeln!(buffer, "| {:^inner_width$} |", &self.title) ?;
-        writeln!(buffer, "+={:=<inner_width$}=+", "") ?;
+        writeln!(buffer, "+-{:-<inner_width$}-+", "")?;
+        writeln!(buffer, "| {:^inner_width$} |", &self.title)?;
+        writeln!(buffer, "+={:=<inner_width$}=+", "")?;
         for line in inner.lines() {
-            writeln!(buffer, "| {:inner_width$} |", line) ?;
+            writeln!(buffer, "| {:inner_width$} |", line)?;
         }
-        writeln!(buffer, "+-{:-<inner_width$}-+", "") ?;
+        writeln!(buffer, "+-{:-<inner_width$}-+", "")?;
 
         Ok(())
     }

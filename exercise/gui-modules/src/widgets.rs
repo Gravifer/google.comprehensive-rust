@@ -12,12 +12,15 @@ pub trait Widget {
     fn width(&self) -> usize;
 
     /// Draw the widget into a buffer.
-    fn draw_into(&self, buffer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error> ;
+    fn draw_into(
+        &self,
+        buffer: &mut dyn std::fmt::Write,
+    ) -> Result<(), std::fmt::Error>;
 
     /// Draw the widget on standard output.
     fn draw(&self) -> Result<(), std::fmt::Error> {
         let mut buffer = String::new();
-        self.draw_into(&mut buffer) ?;
+        self.draw_into(&mut buffer)?;
         println!("{buffer}");
 
         Ok(())
